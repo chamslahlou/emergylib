@@ -8,6 +8,7 @@ Chams Lahlou, Olivier Le Corre and Laurent Truffet
 # Overview
 
 This library provides three kinds of emergy computation:
+
     - annual emergy under steady state conditions,
     - empower, i.e. the instantaneous emergy,
     - real-time emergy.
