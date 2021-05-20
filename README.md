@@ -57,7 +57,7 @@ There are three ways to define a system network for which we want to compute eme
 
     ![Alt text](./tree/main/images/emergylib_network_builder.png)
 
-    ![Alt text](images/emergylib_network_builder.png)
+    ![Alt text](emergylib_network_builder.png)
 
 
 # Installation
