@@ -55,9 +55,7 @@ There are three ways to define a system network for which we want to compute eme
     - by adding components and links in the python program, and by saving the resulting network in a file. This will be illustrated in the step-by-step example below.
     - by using our graphical tool, called 'emergy Network Builder'. It is not documented, but very simple and intuitive to use. It uses tkinter the python library for the Tk Graphical User Interface (see https://docs.python.org/3/library/tkinter.html).
 
-    ![Alt text](./tree/main/images/emergylib_network_builder.png)
-
-    ![Alt text](emergylib_network_builder.png)
+![Emergy network builder](images/emergylib_network_builder.png)
 
 
 # Installation
@@ -79,7 +77,7 @@ Compile cython module by:
 
 Let us consider the following example (from Li et al, Emergy Algebra: Improving Matrix Method for Calculating Transformities, Ecological Modelling 221, (411- 422) https://doi.org/10.1016/j.ecolmodel.2009.10.015:
 
-.. image:: exemple.png
+![Li et al example](images/exemple.png)
 
 Under a terminal, launch python, then import the module 'system' of the library:
 
