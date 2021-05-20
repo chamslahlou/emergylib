@@ -55,7 +55,7 @@ There are three ways to define a system network for which we want to compute eme
     - by adding components and links in the python program, and by saving the resulting network in a file. This will be illustrated in the step-by-step example below.
     - by using our graphical tool, called 'emergy Network Builder'. It is not documented, but very simple and intuitive to use. It uses tkinter the python library for the Tk Graphical User Interface (see https://docs.python.org/3/library/tkinter.html).
 
-    ![alt text](/images/emergylib_network_builder.png?raw=true)
+    ![Image](/images/emergylib_network_builder.png?raw=true)
 
 
 # Installation
