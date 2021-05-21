@@ -158,10 +158,9 @@ A simulation can be defined by giving these values in a program, or by loading a
 The format a simulation file is documented in module :meth:`~emergylib.simfile.SimFile`. Here are the first lines of the file sim_Li_et_al.txt (see in folder 'example'). The first line gives the labels of the sources and the labels of connections. The following lines give the input of the sources at each step and the state of each connection. The input flow is the product of the source sej by the input value. For example, at the first step we have 1000 * 0.5 = 500 sej for source 1 and 500 * 0.2 = 100 sej for source 2; at the second step we have 500 sej for source 1 and 400 sej for source 2:
 
     1   2   1:3 2:10    3:4 3:5 4:6 4:7 5:7 5:14    6:8 6:9 7:9 7:13    8:12    9:13    10:4    10:11
-    1   1   True    True    True    True    True    True    True    True    True    True    True    True    True    True    True    True
+    0.5 0.2 True    True    True    True    True    True    True    True    True    True    True    True    True    True    True    True
+    0.5 0.8   True    True    True    True    True    True    True    True    True    True    True    True    True    True    True    True
     0   0   True    True    True    True    True    True    True    True    True    True    True    True    True    True    True    True
-    0   0   True    True    True    True    True    True    True    True    True    True    True    True    True    True    True    True
-
 
 In our case we use the file sim_Li_et_al.txt (see in folder 'example') an run the simulation with options 'max accuracy' and 'display':
 
