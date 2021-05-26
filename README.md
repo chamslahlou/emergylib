@@ -63,14 +63,15 @@ There are three ways to define a system network for which we want to compute eme
 
 1. Install Python 3 if necessary.
 
-2. Install Cython if necessary.
+2. Install Cython 3 if necessary.
 
-3. Download emergy package.
+3. Install Numpy 3 if necessary.
 
-4. Unzip the package
+4. Download emergy package.
 
+5. Unzip the package
 
-Compile cython module by:
+6. Compile cython module by:
 
     python setup-ugraph.py build_ext --inplace
 
