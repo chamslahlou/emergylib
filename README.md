@@ -53,11 +53,11 @@ compute emergy and empower of products in real-time:
 
 There are three ways to define a system network for which we want to compute emergy:
 
-    - directely by editing a text file. In this case, each line defines a component of the system (a source, split, ...) or a link between two coponents. The format is documented in function :meth:`~emergylib.graph.Graph.save`.
+1) Directely by editing a text file. In this case, each line defines a component of the system (a source, split, ...) or a link between two coponents. The format is documented in function :meth:`~emergylib.graph.Graph.save`.
     
-    - by adding components and links in the python program, and by saving the resulting network in a file. This will be illustrated in the step-by-step example below.
+2) By adding components and links in the python program, and by saving the resulting network in a file. This will be illustrated in the step-by-step example below.
     
-    - by using our graphical tool, called 'emergy Network Builder'. It is not documented, but very simple and intuitive to use. It uses tkinter the python library for the Tk Graphical User Interface (see https://docs.python.org/3/library/tkinter.html).
+3) By using our graphical tool, called 'emergy Network Builder'. It is not documented, but very simple and intuitive to use. It uses tkinter the python library for the Tk Graphical User Interface (see https://docs.python.org/3/library/tkinter.html).
 
 ![Emergy network builder](images/emergylib_network_builder.png)
 
