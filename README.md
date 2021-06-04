@@ -3,6 +3,7 @@ A python library for computing emergy
 
 # Authors
 Chams Lahlou, Olivier Le Corre and Laurent Truffet
+http://ecomathique.org/emergylib/
 
 
 # Overview
