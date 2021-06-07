@@ -109,19 +109,6 @@ def display_link_informations(link):
 
 		label_flow_rate.grid_remove()
 		entry_flow_rate.grid_remove()
-	# label_length.grid(row=0, column=3, sticky='nw')
-	# entry_length.grid(row=0, column=4)
-
-	# label_diameter.grid(row=1, column=3, sticky='nw')
-	# entry_diameter.grid(row=1, column=4)
-
-	# label_flow_rate.grid(row=0, column=5, sticky='nw')
-	# entry_flow_rate.grid(row=0, column=6)
-
-	# label_mass_density.grid(row=1, column=5, sticky='nw')
-	# entry_mass_density.grid(row=1, column=6)
-
-	# is_fast_change()
 
 
 def hide_link_informations():
@@ -143,29 +130,6 @@ def hide_link_informations():
 	label_flow_rate.grid_remove()
 	entry_flow_rate.grid_remove()
 
-
-# def display_node_informations2():
-#   global selected_node
-
-#   label_sej.grid_remove()
-#   entry_sej.grid_remove()
-
-#   label_type_text.grid(row=0, column=0, sticky='w')
-#   label_type_value.grid(row=0, column=1, sticky='w')
-
-#   if var_action.get() == 'delete':
-#       entry_label.config(state='disabled')
-#   else:
-#       entry_label.config(state='normal')
-
-#   if selected_node is not None:
-#       label_type_text.grid(row=0, column=0, sticky='w')
-#       var_type.set(nodes[selected_node]['type'])
-#       label_type_value.grid(row=0, column=1, sticky='w')
-
-#       if nodes[selected_node]['type'] == 'source':
-#           label_sej.grid(row=2, column=0, sticky='w')
-#           entry_sej.grid(row=2, column=1)
 
 
 def display_node_informations(node):
@@ -245,9 +209,6 @@ def find_new_label():
 
 
 def delete_node(node):
-
-#	x = nodes[node]['x']
-#	y = nodes[node]['y']
 
 	removed_links = []
 	for start, end in links:
@@ -409,17 +370,17 @@ def set_weight(*args):
 		
 		weight = var_weight.get()
 
-		link_weights = sum([float(links[(i, j)]['weight']) for (i,j) in links if i == start])
-		print('link weight', link_weights)
-		print('var weight', float(var_weight.get()))
+		# link_weights = sum([float(links[(i, j)]['weight']) for (i,j) in links if i == start])
+		# print('link weight', link_weights)
+		# print('var weight', float(var_weight.get()))
 		
-		if link_weights + float(weight) > 1:
-			msg = 'Links originating from node ' + str(nodes[start]['label']) +\
-				  ':\nsum of weights cannot be greater than 1'
+		# if link_weights + float(weight) > 1:
+		# 	msg = 'Links originating from node ' + str(nodes[start]['label']) +\
+		# 		  ':\nsum of weights cannot be greater than 1'
 
-			messagebox.showerror(title=None, message=msg)
+		# 	messagebox.showerror(title=None, message=msg)
 			
-			return
+		# 	return
 
 		links[(start, end)]['weight'] = weight
 
@@ -466,6 +427,47 @@ def set_mass_density(*args):
 	except ValueError:
 		pass
 
+
+
+def check_split_weights(node):
+	link_weights = sum([float(links[(i, j)]['weight']) for (i,j) in links if i == node])
+
+	if link_weights > 1:
+		print('check_split', nodes[node]['label'],'->', link_weights)
+		return False
+	else:
+		return True
+
+
+def check_validity():
+	print("Check Validity")
+
+	err_nodes = []
+	err_splits = []
+
+	if links == {}:
+		for node in nodes:
+			label = nodes[node]['label']
+			err_nodes.append(label)
+
+	else:
+		for node in nodes:
+			connected = False
+			for (start, end) in links:
+				if node == start or node == end:
+					connected = True
+
+			if not connected:
+				label = nodes[node]['label']
+				err_nodes.append(label)
+
+			if nodes[node]['type'] == 'split':
+				print('check', nodes[node]['label'])
+				if not check_split_weights(node):
+					label = nodes[node]['label']
+					err_splits.append(label)				
+
+	return err_nodes, err_splits
 
 
 def find_node_label(x, y):
@@ -532,10 +534,6 @@ def click_on_link(event):
 	hide_node_informations()
 	
 	link = event.widget.find_withtag("current")[0]
-	#var_label.set(nodes[node]['label'])
-	#var_type.set(nodes[node]['type'])
-
-	#print('\nclick_on_no ->', node)
 	
 	if link == selected_link:
 		select_link(None)   # cancel selected link
@@ -545,8 +543,7 @@ def click_on_link(event):
 		delete_link(link)
 
 	elif var_action.get() == 'link':
-		print("link -->", link)
-		#check_is_fast.grid(row=0, column=2, sticky='nw')
+
 		select_link(link)
 		set_link_informations(link)
 		display_link_informations(link)
@@ -754,11 +751,41 @@ def save_as_file():
 	print(nodes)
 	print(links)
 	print(history)
+	
+	err_nodes, err_splits = check_validity()
+
+	msg = ''
+
+	if err_nodes != []:
+		if len(err_nodes) > 1:
+			msg = 'Nodes not connected: '
+		else:
+			msg = 'Node not connected: '
+
+		msg += ", ".join(err_nodes)
+
+	msg2 =''
+
+	if err_splits != []:
+		if len(err_splits) > 1:
+			msg2 = 'Splits with sum of weights > 1: '
+		else:
+			msg2 = 'Split with sum of weights > 1: '
+
+		msg2 += ", ".join(err_splits)
+
+	if msg != '':
+		if msg2 != '':
+			msg += '\n' + msg2
+
+		messagebox.showerror(title=None, message=msg)
+		return
 
 	root.filename = filedialog.asksaveasfilename(title = "Select file",
 					filetypes = (("network files","*.net"),("all files","*.*")))
 	
 	print(root.filename)
+	
 	with open(root.filename,'w') as output_file:
 
 		for action in history:
@@ -808,9 +835,6 @@ def save_as_file():
 				mass_density = links[(i,j)]['mass_density']
 				flow_rate = links[(i,j)]['flow_rate']
 
-				# CALCULER MASS
-
-				# VERIFIER CETTE PARTIE, NOTAMMENT IS_FAST
 				data = i_label + ' ' + j_label + ' '
 				if mass_density != 1000.0:
 					data += str(weight) + ' ' + str(is_fast) + ' ' + str(mass_density)
@@ -933,9 +957,7 @@ def save_as_file2():
 			mass_density = links[(i,j)]['mass_density']
 			flow_rate = links[(i,j)]['flow_rate']
 
-			# CALCULER MASS
 
-			# VERIFIER CETTE PARTIE, NOTAMMENT IS_FAST
 			data = i_label + ' ' + j_label + ' '
 			if mass_density != 1000.0:
 				data += str(weight) + ' ' + str(is_fast) + ' ' + str(mass_density)
@@ -1065,7 +1087,6 @@ menu_file.add_command(label="New", command=new_network)
 menu_file.add_command(label="Open", command=open_file)
 menu_file.add_command(label="Save", command=save_as_file)
 menu_file.add_command(label="Save as...", command=save_as_file)
-#menu_file.add_command(label="Close", command=donothing)
 
 
 # BINDS
@@ -1083,6 +1104,10 @@ canvas.tag_bind("arrow", "<Button-1>", click_on_link)
 canvas.tag_bind("node", "<Button-1>", click_on_node)
 canvas.tag_bind("node", "<Motion>", mouse_over_node)
 
-root.mainloop()
+def main():
+	root.mainloop()
+
+if __name__ == '__main__':
+	main()
 
 
