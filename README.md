@@ -84,7 +84,7 @@ Let us consider the following example (from Li et al, Emergy Algebra: Improving 
 
 ![Li et al example](images/exemple.png)
 
-Under a terminal, launch python, then import the module 'system' of the library:
+Under a terminal, we launch python and then import module 'system' of the library:
 
     >>> import emergylib.system as emsys
 
@@ -235,4 +235,4 @@ In our case we use the file sim_Li_et_al.txt (see in folder 'example') an run th
 
 
 # Documentation
-See http://ecomathique.org/emergylib/
+Every command of the library is detailed at http://ecomathique.org/emergylib/
