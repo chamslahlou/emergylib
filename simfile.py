@@ -6,7 +6,7 @@ class SimFile(object):
     saved in an output file. The format of a simulation input file is defined as
     follows:
 
-    - First line contains the label of columns in the following order:
+    - The first line contains the labels of columns in the following order:
         1. Source labels for the input flows
         2. Tank labels for the outgoing flows
         3. Tank labels for the loads
@@ -17,7 +17,7 @@ class SimFile(object):
 
     The format of a simulation output file is defined as follows:
 
-    - The first line contains the label of columns in the following order:
+    - The first line contains the labels of columns in the following order:
         1. Product labels for emergy values
         2. Product labels for empower values
 

@@ -392,8 +392,8 @@ cdef class UGraph:
             s = self.source_node_number[source]
             flow = self.state.source_flow[s]
 
-            val = flow * self.graph.sej[s] * self.time_step
-            #print('input',s,': flow ->', flow, 'sej ->', self.graph.sej[s])
+            val = flow * self.graph.uev[s] * self.time_step
+            #print('input',s,': flow ->', flow, 'uev ->', self.graph.uev[s])
             #val = flow * self.time_step
 
             if val > 0:

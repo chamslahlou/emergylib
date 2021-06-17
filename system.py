@@ -188,15 +188,15 @@ class System(object):
         self.__current_step += 1
         ugraph.set_step(self.__current_step)
 
-    def add_source(self, node_label, sej):
+    def add_source(self, node_label, uev):
         """Add a source node to the system.
 
         :param node_label: label of the source.
         :type node_label: str
-        :param sej: unitary emergy value in solar equivalent joule.
-        :type sej: int
+        :param uev: unitary energy value.
+        :type uev: int
         """
-        self.graph.add_node(node_label, 'source', sej)
+        self.graph.add_node(node_label, 'source', uev)
 
 
     def add_split(self, node_label):
@@ -235,6 +235,7 @@ class System(object):
                  mass=1.0, length=1.0, diameter=1.0, mass_density=1000.0, 
                 flow_rate=1000.0):
         """Add an arc between two nodes to the system.
+
         :param node_label: label of the head node.
         :type node_label: str or int
         :param suc_label: label of the tail node.
@@ -247,13 +248,15 @@ class System(object):
         :type mass: double
         :param length: of the link (in m).
         :type length: double
-        :param diameter:of the link (in m).
+        :param diameter: of the link (in m).
         :type diameter: double
-        :param mass_density: of the material flowing (in kg/ m^3)
-        :param flow_rate: of the material flowing (in kg/s)
-        """
+        :param mass_density: of the material flowing (in kg/ m^3).
+        :type mass_density: double
+        :param flow_rate: of the material flowing (in kg/s).
+        :type flow_rate: double
 
-        # VERIFIER QUE LES SOMMETS EXISTENT
+        """     
+        
         self.graph.add_arc(node_label, suc_label, weight, is_fast, mass)
 
     def create(self):
@@ -350,7 +353,7 @@ class System(object):
             suc = g.successors[node][0]
             suc_path = path[:]
             suc_path.append(suc)
-            return g.sej[node] * self.__compute_empower(suc, product, suc_path)
+            return g.uev[node] * self.__compute_empower(suc, product, suc_path)
 
         if g.type[node] == 'split':
             val = 0
@@ -505,7 +508,7 @@ class System(object):
 
         # Unitary input values
         for i in self.sources:
-            source_flow[i] = 1.0 #self.graph.sej[i]
+            source_flow[i] = 1.0 #self.graph.uev[i]
 
         for i in self.tanks:
             tank_flow[i] = 1.0  # Flows must be able to pass through tanks

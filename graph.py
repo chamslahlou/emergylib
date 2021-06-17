@@ -40,8 +40,8 @@ class Graph(object):
         self.successors = []
 
         # For sources:
-        # sej[i] is the unitary emergy value of node number i
-        self.sej = {} 
+        # uev[i] is the unitary energy value of node number i
+        self.uev = {} 
 
         # For tanks:
         # output_node[i] is the successor number of node number i
@@ -102,13 +102,13 @@ class Graph(object):
             self.node_number[label] = i
             i += 1
 
-        # Sort sej values of sources according to their node number
-        norm_sej = {}
+        # Sort uev values of sources according to their node number
+        norm_uev = {}
         for label, node_type in self.__node_data:
             if node_type == 'source':
-                norm_sej[self.node_number[label]] = self.sej[label]
+                norm_uev[self.node_number[label]] = self.uev[label]
 
-        self.sej = {**norm_sej}
+        self.uev = {**norm_uev}
 
 
     def __normalize_arcs(self):
@@ -186,14 +186,14 @@ class Graph(object):
         :type node_label: str or int
         :param node_type: type of the node.
         :type node_type: 'source', 'product', 'split', 'coproduct', or 'tank'
-        :param \*args: solar equivalent joule if node_type is 'source'.
+        :param \*args: unit energy value (in sej per specific unit) if node_type is 'source'.
         :type \*args: int
         """
         self.__node_data.append((str(node_label), node_type))
         self.num_nodes += 1
 
         if args:
-            self.sej[str(node_label)] = args[0]
+            self.uev[str(node_label)] = args[0]
 
 
     def add_arc(self, node_label, suc_label, weight=1.0, is_fast=True,
@@ -241,7 +241,7 @@ class Graph(object):
         
         - LABEL is the label of the source;
         
-        - PARAM1 is the sej value of the source.
+        - PARAM1 is the uev value of the source.
 
 
         For other types of element a line is of the form
@@ -286,8 +286,8 @@ class Graph(object):
                 type_ = self.type[i]
 
                 if type_ == 'source':
-                    sej = str(self.sej[i])
-                    output_file.write('SOURCE ' + ' ' + label + ' ' + sej + '\n')
+                    uev = str(self.uev[i])
+                    output_file.write('SOURCE ' + ' ' + label + ' ' + uev + '\n')
 
                 elif type_ == 'split':
                     output_file.write('SPLIT ' + ' ' + label + '\n')

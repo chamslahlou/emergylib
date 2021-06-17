@@ -4,7 +4,12 @@ from tkinter import font
 from tkinter import messagebox
 from tkinter import filedialog
 
+
 import math
+import os
+
+import emergylib.system as emsys
+
 
 nodes = {}
 links = {}
@@ -17,19 +22,22 @@ selected_node = None
 
 selected_link = None
 
-history = []
+new_node = None
+
+#history = []
 
 
 def add_node(x, y):
-	global num_node, selected_node
+	global num_node, selected_node, new_node
 
-	num_node = find_new_label()
+	num_node = find_new_label()  # internal node number
 
 	label = str(num_node)
 
 	var_label.set(label)
 
-	id_node = canvas.create_rectangle(x, y, x+NODE_SIZE_X, y+NODE_SIZE_X, fill='light grey', tags='node') 
+	# tkinter numbers
+	id_node = canvas.create_rectangle(x, y, x+NODE_SIZE_X, y+NODE_SIZE_X, fill='light grey', tags='node')
 	id_text = canvas.create_text(x+NODE_SIZE_X/2, y+NODE_SIZE_X/2, text=label, tags='node')
 
 	nodes[id_node] = {'label':label, 'x':x, 'y':y, 'type':var_action.get(), 
@@ -37,12 +45,13 @@ def add_node(x, y):
 					  'id_text':id_text}
 
 	if var_action.get() == 'source':
-		nodes[id_node]['sej'] = 1.0
+		nodes[id_node]['uev'] = 0.0
 
 	select_node(selected_node)
 	display_node_informations(selected_node)
 
-	history.append(('node', id_node))
+	new_node = id_node
+	#history.append(('node', id_node))
 
 def set_link_informations(link):
 	print('INFO LINKS', links)
@@ -136,8 +145,8 @@ def display_node_informations(node):
 	#global selected_node
 
 	print('display', node)
-	label_sej.grid_remove()
-	entry_sej.grid_remove()
+	label_uev.grid_remove()
+	entry_uev.grid_remove()
 
 	label_label.grid(row=0, column=0, sticky='w')
 	entry_label.grid(row=0, column=1, sticky='w')
@@ -146,9 +155,9 @@ def display_node_informations(node):
 	label_type_value.grid(row=1, column=1, sticky='w')
 
 	if var_action.get() == 'delete':
-		entry_sej.config(state='disabled')
+		entry_uev.config(state='disabled')
 	else:
-		entry_sej.config(state='normal')
+		entry_uev.config(state='normal')
 
 	if node is not None:
 		label_type_text.grid(row=1, column=0, sticky='w')
@@ -156,9 +165,9 @@ def display_node_informations(node):
 		label_type_value.grid(row=1, column=1, sticky='w')
 
 		if nodes[node]['type'] == 'source':
-			label_sej.grid(row=2, column=0, sticky='w')
-			var_sej.set(nodes[node]['sej'])
-			entry_sej.grid(row=2, column=1)
+			label_uev.grid(row=2, column=0, sticky='w')
+			var_uev.set(nodes[node]['uev'])
+			entry_uev.grid(row=2, column=1)
 
 
 def hide_node_informations():
@@ -168,8 +177,8 @@ def hide_node_informations():
 	label_label.grid_remove()
 	entry_label.grid_remove()
 
-	label_sej.grid_remove()
-	entry_sej.grid_remove()
+	label_uev.grid_remove()
+	entry_uev.grid_remove()
 
 
 def get_node(id_obj):
@@ -192,6 +201,8 @@ def select_node(node):
 	if selected_node is not None:
 		canvas.itemconfigure(selected_node, outline='red', width=2)
 		var_type.set(nodes[selected_node]['type'])
+
+	print('SELECTED NODE:', selected_node)
 
 
 def find_new_label():
@@ -261,7 +272,7 @@ def move_node(node, x, y):
 		if start == node:
 			x2 = nodes[end]['x'] + NODE_SIZE_X/2
 			y2 = nodes[end]['y'] + NODE_SIZE_Y/2
-			canvas.coords(id_arrow, x2, y2, x1, y1)
+			canvas.coords(id_arrow, x1, y1, x2, y2)
 
 		elif end == node:
 			x2 = nodes[start]['x'] + NODE_SIZE_X/2
@@ -288,8 +299,8 @@ def add_link(start, end):
 
 		if nodes[start]['type'] == 'split':
 			link_weight = 0.0
-
 			entry_weight.config(state='normal')
+
 		else:
 			entry_weight.config(state='disabled')
 
@@ -319,7 +330,7 @@ def add_link(start, end):
 		select_link(link)
 		select_node(None)
 
-		history.append(('link', start, end))
+		#history.append(('link', start, end))
 
 
 def display_label(node):
@@ -337,27 +348,36 @@ def set_label(*args):
 			if new_label in [nodes[node]['label'] for node in nodes]:
 				return
 
-			nodes[selected_node]['label'] = new_label
+			print('SET LABEL')
+			if selected_node is not None:
+				node_id = selected_node
+			elif new_node is not None:
+				node_id = new_node
+
+			nodes[node_id]['label'] = new_label
 
 			if new_label.isdigit():
-				nodes[selected_node]['num'] = int(new_label)
+				nodes[node_id]['num'] = int(new_label)
 
 			# mise à jour 'entry'
 			var_label.set(new_label)
 
 			# affichage label dans le canevas
-			id_text = nodes[selected_node]['id_text']
+			id_text = nodes[node_id]['id_text']
 			canvas.itemconfigure(id_text, text=str(new_label))
+			
+			select_node(None)   # cancel selected node
+			hide_node_informations()
 
 	except ValueError:
 		pass
 
-def set_sej(*args):
+def set_uev(*args):
 	
 	try:
-		print(entry_sej.get())
+		print(entry_uev.get())
 		label = str(selected_node)
-		nodes[selected_node]['sej'] = var_sej.get()
+		nodes[selected_node]['uev'] = var_uev.get()
 	except ValueError:
 		pass
 
@@ -470,12 +490,20 @@ def check_validity():
 	return err_nodes, err_splits
 
 
-def find_node_label(x, y):
+#def find_node_label(x, y):
+#	for node in nodes:
+#		x_node = nodes[node]['x']
+#		y_node = nodes[node]['y']
+#		if (x_node <= x and x <= x_node + NODE_SIZE_X) and (y_node <= y and y <= y_node + NODE_SIZE_Y):
+#			return node
+#	return None
+
+
+def get_node_id_of_label(label):
 	for node in nodes:
-		x_node = nodes[node]['x']
-		y_node = nodes[node]['y']
-		if (x_node <= x and x <= x_node + NODE_SIZE_X) and (y_node <= y and y <= y_node + NODE_SIZE_Y):
+		if nodes[node]['label'] == label:
 			return node
+
 	return None
 
 
@@ -607,6 +635,12 @@ def click_on_canvas(event):
 			var_type.set(var_action.get())
 			label_type_value.grid(row=1, column=1, sticky='w')
 			
+			entry_uev.config(state='normal')
+			label_uev.grid(row=2, column=0, sticky='w')
+			#var_uev.set(nodes[node]['uev'])
+			entry_uev.grid(row=2, column=1)
+
+
 			#display_node_informations()
 
 			selected_node = None
@@ -689,9 +723,11 @@ def new_network():
 
 	selected_node = None
 	selected_link = None
-	history = []
+	new_node = None
+
 
 def open_file():
+
 	root.filename =  filedialog.askopenfilename(title = "Select file",filetypes = (("network files","*.net"),("all files","*.*")))
 	print(root.filename)
 
@@ -705,53 +741,59 @@ def open_file():
 			
 			if type_ == 'FIG_NODE':
 
-				id_node, label, x, y, node_type, num, id_text = elements[1:8]
+				label, x, y, node_type, num = elements[1:6]
 
-				id_node, id_text = int(id_node), int(id_text)
 				x, y, num = int(x), int(y), int(num)
+				
+				id_node = canvas.create_rectangle(x, y, x+NODE_SIZE_X, y+NODE_SIZE_X, fill='light grey', tags='node')
+				id_text = canvas.create_text(x+NODE_SIZE_X/2, y+NODE_SIZE_X/2, text=label, tags='node')
 				
 				nodes[id_node] = {'label':label, 'x':x, 'y':y, 'type':node_type,
 								  'num':num, 'id_text':id_text}
 
-				if node_type == 'source':
-					nodes[id_node]['sej'] = float(elements[8])
 
-				canvas.create_rectangle(x, y, x+NODE_SIZE_X, y+NODE_SIZE_X, fill='light grey', tags='node') 
-				canvas.create_text(x+NODE_SIZE_X/2, y+NODE_SIZE_X/2, text=label, tags='node')
+				if node_type == 'source':
+					nodes[id_node]['uev'] = float(elements[6])
+
 
 			elif type_ == 'FIG_LINK':
 				
-				start, end, id_arrow, is_fast, weight, length = elements[1:7]
-				diameter, mass_density, flow_rate = elements[7:]
+				x1, y1, x2, y2 = elements[1:5]
+				start, end, is_fast, weight, length = elements[5:10]
+				diameter, mass_density, flow_rate = elements[10:]
 
-				start, end, id_arrow = int(start), int(end), int(id_arrow)
+				x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+
+				start_label = get_node_id_of_label(start)
+				end_label = get_node_id_of_label(end)
+
+				start, end = int(start), int(end)
 				is_fast, weight = bool(is_fast), float(weight)
 				length, diameter = float(length), float(diameter)
 				mass_density, flow_rate = float(mass_density), float(flow_rate)
 
-				links[(start, end)] = {'id_arrow':id_arrow, 'weight':weight,
+				x1 += NODE_SIZE_X/2
+				y1 += NODE_SIZE_Y/2
+				x2 += NODE_SIZE_X/2
+				y2 += NODE_SIZE_Y/2
+
+				link = canvas.create_line(x1, y1, x2, y2, arrow='last', tags="arrow")
+
+				links[(start_label, end_label)] = {'id_arrow':link, 'weight':weight,
 									   'is_fast':is_fast, 'length':length,
 							   		   'diameter':diameter, 
 							   		   'mass_density':mass_density,
 									   'flow_rate':flow_rate}
+
 				print(nodes)
-				x1 = nodes[start]['x'] + NODE_SIZE_X/2
-				y1 = nodes[start]['y'] + NODE_SIZE_Y/2
-				x2 = nodes[end]['x'] + NODE_SIZE_X/2
-				y2 = nodes[end]['y'] + NODE_SIZE_Y/2
 
-				link = canvas.create_line(x1, y1, x2, y2, arrow='last', tags="arrow")
 
-		print(nodes)
-		print(links)
+	print(nodes)
+	print(links)
 
 
 def save_as_file():
 
-	print(nodes)
-	print(links)
-	print(history)
-	
 	err_nodes, err_splits = check_validity()
 
 	msg = ''
@@ -783,133 +825,17 @@ def save_as_file():
 
 	root.filename = filedialog.asksaveasfilename(title = "Select file",
 					filetypes = (("network files","*.net"),("all files","*.*")))
-	
-	print(root.filename)
-	
-	with open(root.filename,'w') as output_file:
-
-		for action in history:
-			if action[0] == 'node':
-				id_node = action[1]
-				label = nodes[id_node]['label']
-				type_ = nodes[id_node]['type']
-				x = str(nodes[id_node]['x'])
-				y = str(nodes[id_node]['y'])
-				num = str(nodes[id_node]['num'])
-				id_text = str(nodes[id_node]['id_text'])
-				sej = ''
-
-				if type_ == 'source':
-					sej = str(nodes[id_node]['sej'])
-					output_file.write('SOURCE ' + ' ' + label + ' ' + sej + '\n')
-
-				elif type_ == 'split':
-					output_file.write('SPLIT ' + ' ' + label + '\n')
-
-				elif type_ == 'coproduct':
-					output_file.write('COPRODUCT ' + ' ' + label + '\n')
-
-				elif type_ == 'tank':
-					output_file.write('TANK ' + ' ' + label + '\n')
-
-				elif type_ == 'product':
-					output_file.write('PRODUCT ' + ' ' + label + '\n')
-
-				data = str(id_node) + ' ' + label + ' ' + x + ' ' + y + ' '
-				data +=	type_ + ' ' + num + ' ' + id_text + ' ' + sej
-
-				output_file.write('FIG_NODE ' + data + '\n')
-			
-			else:
-
-				i, j = action[1:]
-
-				i_label = nodes[i]['label']
-				j_label = nodes[j]['label']
-
-				id_arrow = links[(i,j)]['id_arrow']
-				weight = links[(i,j)]['weight']
-				is_fast = links[(i,j)]['is_fast']
-				length = links[(i,j)]['length']
-				diameter = links[(i,j)]['diameter']
-				mass_density = links[(i,j)]['mass_density']
-				flow_rate = links[(i,j)]['flow_rate']
-
-				data = i_label + ' ' + j_label + ' '
-				if mass_density != 1000.0:
-					data += str(weight) + ' ' + str(is_fast) + ' ' + str(mass_density)
-				elif is_fast != True:
-					data += str(weight) + ' ' + str(is_fast)
-				elif weight != 1.0:
-					data += str(weight)
-
-				output_file.write('LINK ' + data + '\n')
-
-				data = str(i) + ' ' + str(j) + ' ' + str(id_arrow) + ' '
-				data += str(is_fast) + ' ' + str(weight) + ' ' + str(length) + ' '
-				data += str(diameter) + ' ' + str(mass_density) + ' ' + str(flow_rate)
-				output_file.write('FIG_LINK ' + data + '\n')
 
 
-def open_file2():
-	root.filename =  filedialog.askopenfilename(title = "Select file",filetypes = (("network files","*.net"),("all files","*.*")))
-	print(root.filename)
+	# for communication with Exel: name of network n a file
+	base, network_name = os.path.split(root.filename)
+	with open('network_name.dat','w') as output_file:
+		output_file.write(network_name)
 
-	with open(root.filename,'r') as input_file:
-		
-		new_network()
+	# take name without extension for Excel files
+	excel_name1 = network_name.split('.')[0] + '1.sim'
+	excel_name2 = network_name.split('.')[0] + '2.sim'
 
-		for line in input_file:
-			elements = line.split()
-			type_ = elements[0]
-			
-			if type_ == 'FIG_NODE':
-
-				id_node, label, x, y, node_type, num, id_text = elements[1:8]
-
-				id_node, id_text = int(id_node), int(id_text)
-				x, y, num = int(x), int(y), int(num)
-				
-				nodes[id_node] = {'label':label, 'x':x, 'y':y, 'type':node_type,
-								  'num':num, 'id_text':id_text}
-
-				if node_type == 'source':
-					nodes[id_node]['sej'] = float(elements[8])
-
-				canvas.create_rectangle(x, y, x+NODE_SIZE_X, y+NODE_SIZE_X, fill='light grey', tags='node') 
-				canvas.create_text(x+NODE_SIZE_X/2, y+NODE_SIZE_X/2, text=label, tags='node')
-
-			elif type_ == 'FIG_LINK':
-				
-				start, end, id_arrow, is_fast, weight, length = elements[1:7]
-				diameter, mass_density, flow_rate = elements[7:]
-
-				start, end, id_arrow = int(start), int(end), int(id_arrow)
-				is_fast, weight = bool(is_fast), float(weight)
-				length, diameter = float(length), float(diameter)
-				mass_density, flow_rate = float(mass_density), float(flow_rate)
-
-				links[(start, end)] = {'id_arrow':id_arrow, 'weight':weight,
-									   'is_fast':is_fast, 'length':length,
-							   		   'diameter':diameter, 
-							   		   'mass_density':mass_density,
-									   'flow_rate':flow_rate}
-				print(nodes)
-				x1 = nodes[start]['x'] + NODE_SIZE_X/2
-				y1 = nodes[start]['y'] + NODE_SIZE_Y/2
-				x2 = nodes[end]['x'] + NODE_SIZE_X/2
-				y2 = nodes[end]['y'] + NODE_SIZE_Y/2
-
-				link = canvas.create_line(x1, y1, x2, y2, arrow='last', tags="arrow")
-	print(nodes)
-	print(links)
-
-def save_as_file2():
-	print(history)
-	root.filename = filedialog.asksaveasfilename(title = "Select file",
-					filetypes = (("network files","*.net"),("all files","*.*")))
-	
-	print(root.filename)
 	with open(root.filename,'w') as output_file:
 
 		# nodes
@@ -919,13 +845,14 @@ def save_as_file2():
 			x = str(nodes[i]['x'])
 			y = str(nodes[i]['y'])
 			num = str(nodes[i]['num'])
-			id_text = str(nodes[i]['id_text'])
-			id_node = str(i)
-			sej = ''
+			#id_text = str(nodes[i]['id_text'])
+			#id_node = str(i)
+			uev = ''
 
 			if type_ == 'source':
-				sej = str(nodes[i]['sej'])
-				output_file.write('SOURCE ' + ' ' + label + ' ' + sej + '\n')
+				uev = str(nodes[i]['uev'])
+				output_file.write('SOURCE ' + ' ' + label + ' ' + uev + '\n')
+
 
 			elif type_ == 'split':
 				output_file.write('SPLIT ' + ' ' + label + '\n')
@@ -939,8 +866,8 @@ def save_as_file2():
 			elif type_ == 'product':
 				output_file.write('PRODUCT ' + ' ' + label + '\n')
 
-			data = id_node + ' ' + label + ' ' + x + ' ' + y + ' ' + type_ + ' '
-			data +=	num + ' ' + id_text + ' ' + sej
+			data = label + ' ' + x + ' ' + y + ' ' + type_
+			data +=	' ' + num + ' ' + uev
 
 			output_file.write('FIG_NODE ' + data + '\n')
 
@@ -949,7 +876,7 @@ def save_as_file2():
 			i_label = nodes[i]['label']
 			j_label = nodes[j]['label']
 
-			id_arrow = links[(i,j)]['id_arrow']
+			#id_arrow = links[(i,j)]['id_arrow']
 			weight = links[(i,j)]['weight']
 			is_fast = links[(i,j)]['is_fast']
 			length = links[(i,j)]['length']
@@ -957,21 +884,60 @@ def save_as_file2():
 			mass_density = links[(i,j)]['mass_density']
 			flow_rate = links[(i,j)]['flow_rate']
 
+			data = i_label + ' ' + j_label
 
-			data = i_label + ' ' + j_label + ' '
 			if mass_density != 1000.0:
-				data += str(weight) + ' ' + str(is_fast) + ' ' + str(mass_density)
+				data += ' ' + str(weight) + ' ' + str(is_fast) + ' ' + str(mass_density)
 			elif is_fast != True:
-				data += str(weight) + ' ' + str(is_fast)
+				data += ' ' + str(weight) + ' ' + str(is_fast)
 			elif weight != 1.0:
-				data += str(weight)
-
+				data += ' ' + str(weight)
+			
 			output_file.write('LINK ' + data + '\n')
 
-			data = str(i) + ' ' + str(j) + ' ' + str(id_arrow) + ' '
-			data += str(is_fast) + ' ' + str(weight) + ' ' + str(length) + ' '
-			data += str(diameter) + ' ' + str(mass_density) + ' ' + str(flow_rate)
-			output_file.write('FIG_LINK ' + data + '\n')
+			x1 = nodes[i]['x']
+			y1 = nodes[i]['y']
+			x2 = nodes[j]['x']
+			y2 = nodes[j]['y']
+
+			data_fig = str(x1) + ' ' + str(y1) + ' ' +  str(x2) + ' ' + str(y2)
+			data_fig += ' ' + data
+			data_fig += ' ' + str(is_fast) + ' ' + str(weight) + ' ' + str(length)
+			data_fig += ' ' +str(diameter) + ' ' + str(mass_density) + ' ' + str(flow_rate)
+
+			output_file.write('FIG_LINK ' + data_fig + '\n')
+
+	# for communication between Excel and python
+	network = emsys.System()
+	network.load(network_name)
+	g = network.graph
+
+	with open(excel_name1, 'w') as output_file:
+
+		# For Excel, values separated by tabs
+		print("écriture de la première ligne dans", excel_name1)
+		output_file.write('TYPE' + '\t' + 'LABEL' + '\t' + 'UEV' + '\n')
+
+		for i in network.sources:
+			uev = str(g.uev[i])
+			output_file.write('SOURCE' + '\t' + g.label[i] + '\t' + uev + '\n')
+
+		for i in network.tanks:
+			output_file.write('TANK' + '\t' + g.label[i] + '\n')
+
+
+	with open(excel_name2, 'w') as output_file:
+		output_file.write('Time')
+
+		for i in network.sources:
+			output_file.write('\t' + g.label[i])
+
+		for i in network.tanks:
+			output_file.write('\t' + g.label[i])
+
+		for i, j in network.arcs:
+			output_file.write('\t' + g.label[i] + ':' + g.label[j])
+
 
 # TKINTER
 root = Tk()
@@ -1012,8 +978,8 @@ label_add.grid(row=0, column=0, sticky='w')
 label_delete = Label(frame1, text='DELETE', font=font.Font(size=14, weight='bold'))
 label_delete.grid(row=1, column=0, sticky='w')
 
-label_delete = Label(frame1, text='MOVE', font=font.Font(size=14, weight='bold'))
-label_delete.grid(row=2, column=0, sticky='w')
+label_move = Label(frame1, text='MOVE', font=font.Font(size=14, weight='bold'))
+label_move.grid(row=2, column=0, sticky='w')
 
 action_labels = ['source', 'split', 'coproduct', 'tank', 'product', 'link', 'delete', 'move']
 var_action = StringVar()
@@ -1042,9 +1008,9 @@ var_label = StringVar()
 entry_label = Entry(frame2, width=7, textvariable=var_label)
 
 
-var_sej = DoubleVar(value=1.0)
-entry_sej = Entry(frame2, width=7, textvariable=var_sej)
-label_sej = Label(frame2, text = "sej")
+var_uev = DoubleVar(value=0.0)
+entry_uev = Entry(frame2, width=7, textvariable=var_uev)
+label_uev = Label(frame2, text = "UEV")
 
 
 label_weight = Label(frame3, text = "Weight")
@@ -1092,7 +1058,7 @@ menu_file.add_command(label="Save as...", command=save_as_file)
 # BINDS
 canvas.bind('<Button-1>', click_on_canvas)
 entry_label.bind('<Return>', set_label)
-entry_sej.bind('<Return>', set_sej)
+entry_uev.bind('<Return>', set_uev)
 
 entry_weight.bind('<Return>', set_weight)
 entry_length.bind('<Return>', set_length)
