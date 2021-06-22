@@ -79,13 +79,16 @@ class SimFile(object):
             for i in range(graph.num_nodes):
                 if graph.type[i] == 'product':
                     self.__output_file.write(graph.label[i] + ' ')
+                    self.__output_file.flush()
 
             # Write column headers for empower
             for i in range(graph.num_nodes):
                 if graph.type[i] == 'product':
                     self.__output_file.write(graph.label[i] + ' ')
+                    self.__output_file.flush()
 
             self.__output_file.write('\n')
+            self.__output_file.flush()
 
 
     def __fill_dictionary(self, dic, tab1, tab2, start, end):
@@ -160,11 +163,14 @@ class SimFile(object):
         
         for product in emergy:
             self.__output_file.write(str(emergy[product]) + ' ')
+            self.__output_file.flush()
 
         for product in empower:
             self.__output_file.write(str(empower[product]) + ' ')
+            self.__output_file.flush()
             
         self.__output_file.write('\n')
+        self.__output_file.flush()
 
 
     def close(self):

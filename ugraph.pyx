@@ -84,7 +84,7 @@ cdef class UGraph:
     cdef public Double[:,:,:] suc_weight  # numpy array
 
     # num_steps[i, j] = number of steps to cross arc (i, j)
-    cdef Index[:,:] num_steps  # numpy array
+    cdef Int[:,:] num_steps  # numpy array
 
     # Products are numbered from 0 to num_products
     # product_node_number[i] = node number of product number i. 
@@ -365,18 +365,7 @@ cdef class UGraph:
     def number_of_nodes(self):
         """Compute and return the number of nodes in the graph.
         """
-        cdef Index t
-        cdef Index node
-        cdef int n
-
-        n = 0
-        # for t in range(len(self.node)):
-        #     for node in range(self.num_nodes):
-        #         if self.node[t, node]:
-        #             n += 1
-
         return np.count_nonzero(self.active_product)
-        return n
 
     # Wrapper for python access
     def set_step(self, step):

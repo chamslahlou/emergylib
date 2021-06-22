@@ -321,6 +321,7 @@ class System(object):
                     j_label = graph.label[j]
 
                     output_file.write(i_label + ':' + j_label +' ')
+                    output_file.flush()
 
         output_file.close()
 
