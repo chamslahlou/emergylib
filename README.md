@@ -61,6 +61,15 @@ There are three ways to define a system network for which we want to compute eme
 
 ![Emergy network builder](images/emergylib_network_builder.png)
 
+# Excel interface for Windows
+
+An Excel "CLASSEUR" is provided as an interface. It allows the user to:
+- launch the Emergy Network Builder,
+- lauch the computation of empower, anual emergy and sampling time emergy by clicking buttons.
+- use an Execl input sheet to define values for sampling time emergy compuation,
+- read results of computation in Excel sheets
+
+"INSERER IMAGE COPIE ECRAN DES BOUTONS"
 
 # Installation
 
