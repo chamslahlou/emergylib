@@ -235,4 +235,4 @@ In our case we use the file sim_Li_et_al.txt (see in folder 'example') an run th
 
 
 # Documentation
-Every command of the library is detailed in the ![document file]https://github.com/chamslahlou/emergylib/blob/main/emergylib.pdf
+Every command of the library is detailed in this [document file](https://github.com/chamslahlou/emergylib/blob/main/emergylib.pdf)
